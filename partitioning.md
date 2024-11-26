@@ -70,6 +70,10 @@ demo: bookings, public> select * from boarding_passes_hash where flight_id = 123
 demo: bookings, public> select * from boarding_passes where flight_id = 12347 and boarding_no = 1;
 [2024-11-26 15:57:04] 1 row retrieved starting from 1 in 361 ms (execution: 6 ms, fetching: 355 ms)
 ```
-Хотя в обоих случаях используется Index Scan.
+Хотя в обоих случаях используется Index Scan:
+![image](https://github.com/user-attachments/assets/d673ed67-941d-441c-b14d-535b76337832)
+![image](https://github.com/user-attachments/assets/86852a8d-c8b0-41bc-afdf-22cd753875a6)
+
+
 
 
