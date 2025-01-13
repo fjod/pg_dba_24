@@ -1,4 +1,16 @@
+using backend.Db.Fast;
+using backend.Db.Seed;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<FastDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Host=localhost;Database=otus;Username=user1;Password=password1;port=5432;"), 
+        o => o.UseNetTopologySuite()));
+builder.Services.AddDbContext<SlowDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Host=localhost;Database=otus;Username=user2;Password=password2;port=5433;"), 
+        o => o.UseNetTopologySuite()));
+builder.Services.AddScoped<ISeedDb, SeedDb>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -13,29 +25,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
+app.MapPut("/seed", async (ISeedDb seed) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+    await seed.Seed();
+    return Results.Ok();
+});
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
