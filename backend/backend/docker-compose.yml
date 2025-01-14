@@ -2,7 +2,7 @@
 
 services:
   db1:
-    image: postgres:latest
+    image: postgis/postgis
     container_name: postgres_db1
     environment:
       POSTGRES_USER: user1
@@ -14,7 +14,7 @@ services:
       - "5432:5432"
 
   db2:
-    image: postgres:latest
+    image: postgis/postgis
     container_name: postgres_db2
     environment:
       POSTGRES_USER: user2

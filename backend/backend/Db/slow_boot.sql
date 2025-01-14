@@ -1,10 +1,10 @@
 ﻿-- Enable PostGIS extension
 CREATE EXTENSION IF NOT EXISTS postgis;
 
-drop table deliveries cascade;
-drop table orders cascade;
-drop table couriers cascade;
-drop table logistic_centers cascade;
+drop table if exists deliveries cascade;
+drop table if exists orders cascade;
+drop table if exists couriers cascade;
+drop table if exists logistic_centers cascade;
 
 -- Create logistic_centers table
 CREATE TABLE logistic_centers (
