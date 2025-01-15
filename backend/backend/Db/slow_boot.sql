@@ -10,7 +10,7 @@ drop table if exists logistic_centers cascade;
 CREATE TABLE logistic_centers (
                                   id SERIAL PRIMARY KEY,
                                   name VARCHAR(255) NOT NULL,
-                                  location TEXT NOT NULL
+                                  location GEOMETRY(Point, 4326) NOT NULL
 );
 
 -- Create couriers table
@@ -29,12 +29,12 @@ CREATE TABLE orders (
                         FOREIGN KEY (courier_id) REFERENCES couriers(id)
 );
 
--- Create deliveries table with year_month column
+-- Create deliveries table with year column
 CREATE TABLE deliveries (
                             id SERIAL PRIMARY KEY,
                             order_id INT NOT NULL,
                             point GEOMETRY(Point, 4326) NOT NULL,
                             delivery_timestamp TIMESTAMP NOT NULL,
-                            year_month INT NOT NULL,
+                            year INT NOT NULL,
                             FOREIGN KEY (order_id) REFERENCES orders(id)
 );

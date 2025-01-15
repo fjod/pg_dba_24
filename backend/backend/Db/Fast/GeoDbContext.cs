@@ -5,7 +5,7 @@ namespace backend.Db.Fast;
 
 public class GeoDbContext : DbContext
 {
-    public GeoDbContext(DbContextOptions<GeoDbContext> options) : base(options) { }
+    public GeoDbContext(DbContextOptions options) : base(options) { }
 
     public DbSet<LogisticCenter> LogisticCenters { get; set; }
     public DbSet<Courier> Couriers { get; set; }

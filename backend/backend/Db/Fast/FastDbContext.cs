@@ -4,7 +4,7 @@ namespace backend.Db.Fast;
 
 public class FastDbContext : GeoDbContext
 {
-    public FastDbContext(DbContextOptions<GeoDbContext> options) : base(options)
+    public FastDbContext(DbContextOptions<FastDbContext> options) : base(options)
     {
     }
 }

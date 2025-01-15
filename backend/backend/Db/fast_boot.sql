@@ -35,28 +35,22 @@ CREATE TABLE deliveries (
                             order_id INT NOT NULL,
                             point GEOMETRY(Point, 4326) NOT NULL,
                             delivery_timestamp TIMESTAMP NOT NULL,
-                            year_month INT NOT NULL,
-                            PRIMARY KEY (id, year_month),
+                            year INT NOT NULL,
+                            PRIMARY KEY (id, year),
                             FOREIGN KEY (order_id) REFERENCES orders(id)
-) PARTITION BY RANGE (year_month);
+) PARTITION BY RANGE (year);
 
 CREATE INDEX idx_deliveries_geom
     ON deliveries
         USING GIST (point);
 
 -- Create partitions for the deliveries table
+
 DO $$
     DECLARE
         year INT;
-        month INT;
-        year_month_start INT;
-        year_month_end INT;
     BEGIN
         FOR year IN 2020..2025 LOOP
-                FOR month IN 1..12 LOOP
-                        year_month_start := year * 100 + month;
-                        year_month_end := year * 100 + month + 1;
-                        EXECUTE format('CREATE TABLE deliveries_%s PARTITION OF deliveries FOR VALUES FROM (%s) TO (%s)', year_month_start, year_month_start, year_month_end);
-                    END LOOP;
+                EXECUTE format('CREATE TABLE deliveries_%s PARTITION OF deliveries FOR VALUES FROM (%s) TO (%s)', year, year, year + 1);
             END LOOP;
     END $$;

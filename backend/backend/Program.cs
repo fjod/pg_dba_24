@@ -5,11 +5,17 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FastDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Host=localhost;Database=otus;Username=user1;Password=password1;port=5432;"), 
-        o => o.UseNetTopologySuite()));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Fast"),
+        o => o.UseNetTopologySuite())
+        .EnableSensitiveDataLogging()
+        .LogTo(Console.WriteLine, LogLevel.Information));
+
 builder.Services.AddDbContext<SlowDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Host=localhost;Database=otus;Username=user2;Password=password2;port=5433;"), 
-        o => o.UseNetTopologySuite()));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Slow"), 
+            o => o.UseNetTopologySuite())
+      .EnableSensitiveDataLogging()
+        .LogTo(Console.WriteLine, LogLevel.Information));
+
 builder.Services.AddScoped<ISeedDb, SeedDb>();
 
 // Add services to the container.

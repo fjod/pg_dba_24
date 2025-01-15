@@ -15,53 +15,80 @@ public class SeedDb : ISeedDb
         _fastDbContext = fastDbContext;
         _slowDbContext = slowDbContext;
     }
+
     public async Task Seed()
     {
         await ClearAllTables();
-        
+        Console.WriteLine("All tables cleared.");
+
         var centers = LogisticCenterGenerator.GenerateLogisticCenters(10, 54.7818, 32.0401, 50);
+        _fastDbContext.LogisticCenters.AddRange(centers);
+        _slowDbContext.LogisticCenters.AddRange(centers);
+        Console.WriteLine("Logistic centers added.");
+
+        var couriers = new List<Courier>();
+        var orders = new List<Order>();
+
         foreach (var center in centers)
         {
-            GenerateCouriers(center);
-            _fastDbContext.LogisticCenters.Add(center);
-            _slowDbContext.LogisticCenters.Add(center);
+            var generatedCouriers = GenerateCouriersWithOrders(center);
+            couriers.AddRange(generatedCouriers);
         }
-        
+
+        _fastDbContext.Couriers.AddRange(couriers);
+        _slowDbContext.Couriers.AddRange(couriers);
+        Console.WriteLine("Couriers added.");
+
+        foreach (var courier in couriers)
+        {
+            var generatedOrders = GenerateOrders(courier);
+            orders.AddRange(generatedOrders);
+        }
+
+        _fastDbContext.Orders.AddRange(orders);
+        _slowDbContext.Orders.AddRange(orders);
+        Console.WriteLine("Orders added.");
+
         await _fastDbContext.SaveChangesAsync();
         await _slowDbContext.SaveChangesAsync();
+        Console.WriteLine("Logistic centers, couriers, and orders saved.");
 
-        var fastOrders = await _fastDbContext.Orders.AsNoTracking().ToListAsync();
+        var fastOrders = await _fastDbContext.Orders.ToListAsync();
         await GenerateDeliveries(fastOrders, _fastDbContext);
-        var slowOrders = await _slowDbContext.Orders.AsNoTracking().ToListAsync();
+        var slowOrders = await _slowDbContext.Orders.ToListAsync();
         await GenerateDeliveries(slowOrders, _slowDbContext);
+        Console.WriteLine("Deliveries generated and saved.");
     }
 
-    private async Task GenerateDeliveries(List<Order> slowOrders, GeoDbContext context)
+    private async Task GenerateDeliveries(List<Order> orders, GeoDbContext context)
     {
-        var centersList = await _fastDbContext
-            .Orders.Include(o=>o.Courier)
-            .ThenInclude(c=>c.LogisticCenter)
-            .Select(o => new {o.Id, o.Courier.LogisticCenter.Location})
-            .AsNoTracking()
+        var centersWithCouries = await context.Couriers
+            .Include(c => c.LogisticCenter)
+            .Select(c => new { c.Id, c.LogisticCenter.Location })
             .ToDictionaryAsync(arg => arg.Id, arg => arg.Location);
-        foreach (var order in slowOrders)
+        
+        var deliveries = new List<Delivery>();
+
+        foreach (var order in orders)
         {
             var points = PointSeriesGenerator.GeneratePointSeries(
-                centersList[order.Id], 
-                50, 
+                centersWithCouries[order.CourierId],
+                50,
                 150,
-                1,
-                10);
-            var deliveries = points.Select((p, i) => new Delivery
+                10,
+                50);
+            deliveries.AddRange(points.Select((p, i) => new Delivery
             {
                 OrderId = order.Id,
                 Point = p,
                 DeliveryTimestamp = order.OrderTimestamp + TimeSpan.FromMinutes(i),
                 Order = order,
-                YearMonth = order.OrderTimestamp.Year * 100 + order.OrderTimestamp.Month,
-            }).ToList();
+                Year = order.OrderTimestamp.Year,
+            }));
             context.Deliveries.AddRange(deliveries);
             await context.SaveChangesAsync();
+            Console.WriteLine("Deliveries added.");
+            deliveries.Clear();
         }
     }
 
@@ -71,15 +98,17 @@ public class SeedDb : ISeedDb
         await ClearTable<Order>(_fastDbContext);
         await ClearTable<Courier>(_fastDbContext);
         await ClearTable<LogisticCenter>(_fastDbContext);
-        
+
         await ClearTable<Delivery>(_slowDbContext);
         await ClearTable<Order>(_slowDbContext);
         await ClearTable<Courier>(_slowDbContext);
         await ClearTable<LogisticCenter>(_slowDbContext);
     }
 
-    private void GenerateCouriers(LogisticCenter center)
+    private List<Courier> GenerateCouriersWithOrders(LogisticCenter center)
     {
+        var couriers = new List<Courier>();
+
         for (int i = 0; i < 10; i++)
         {
             Courier courier = new()
@@ -89,31 +118,44 @@ public class SeedDb : ISeedDb
                 LogisticCenter = center
             };
 
-            GenerateOrders(courier);
-            _fastDbContext.Couriers.Add(courier);
-            _slowDbContext.Couriers.Add(courier);
+            couriers.Add(courier);
         }
+
+        return couriers;
     }
 
-    private void GenerateOrders(Courier courier)
+    private List<Order> GenerateOrders(Courier courier)
     {
-        for (int i = 0; i < 100; i++)
+        var orders = new List<Order>();
+
+        for (int i = 0; i < 10; i++)
         {
-            Order o = new Order
+            orders.Add(new Order
             {
                 CourierId = courier.Id,
-                OrderTimestamp = _dateTimeGenerator.GenerateRandomDateTime(),
+                OrderTimestamp = _dateTimeGenerator.GenerateRandomDateTime().ToUniversalTime(),
                 Courier = courier
-            };
-            _fastDbContext.Orders.Add(o);
-            _slowDbContext.Orders.Add(o);
+            });
         }
+
+        for (int i = 0; i < 50; i++)
+        {
+            orders.Add(new Order
+            {
+                CourierId = courier.Id,
+                OrderTimestamp = _dateTimeGenerator.GenerateRandomDateTime().ToUniversalTime(),
+                Courier = courier
+            });
+        }
+
+        return orders;
     }
-    
-    public async Task ClearTable<T>(DbContext context) where T : class
+
+    private async Task ClearTable<T>(DbContext context) where T : class
     {
         var dbSet = context.Set<T>();
         context.RemoveRange(dbSet);
         await context.SaveChangesAsync();
+        Console.WriteLine($"Table {typeof(T).Name} cleared.");
     }
 }
