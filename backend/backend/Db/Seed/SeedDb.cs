@@ -62,7 +62,7 @@ public class SeedDb : ISeedDb
 
     private async Task GenerateDeliveries(List<Order> orders, GeoDbContext context)
     {
-        var centersWithCouries = await context.Couriers
+        var centersWithCouriers = await context.Couriers
             .Include(c => c.LogisticCenter)
             .Select(c => new { c.Id, c.LogisticCenter.Location })
             .ToDictionaryAsync(arg => arg.Id, arg => arg.Location);
@@ -72,7 +72,7 @@ public class SeedDb : ISeedDb
         foreach (var order in orders)
         {
             var points = PointSeriesGenerator.GeneratePointSeries(
-                centersWithCouries[order.CourierId],
+                centersWithCouriers[order.CourierId],
                 50,
                 150,
                 10,
@@ -94,15 +94,14 @@ public class SeedDb : ISeedDb
 
     private async Task ClearAllTables()
     {
-        await ClearTable<Delivery>(_fastDbContext);
-        await ClearTable<Order>(_fastDbContext);
-        await ClearTable<Courier>(_fastDbContext);
-        await ClearTable<LogisticCenter>(_fastDbContext);
-
-        await ClearTable<Delivery>(_slowDbContext);
-        await ClearTable<Order>(_slowDbContext);
-        await ClearTable<Courier>(_slowDbContext);
-        await ClearTable<LogisticCenter>(_slowDbContext);
+        await TruncateTableAsync(_fastDbContext, "deliveries");
+        await TruncateTableAsync(_fastDbContext, "orders");
+        await TruncateTableAsync(_fastDbContext, "couriers");
+        await TruncateTableAsync(_fastDbContext, "logistic_centers");
+        await TruncateTableAsync(_slowDbContext, "deliveries");
+        await TruncateTableAsync(_slowDbContext, "orders");
+        await TruncateTableAsync(_slowDbContext, "couriers");
+        await TruncateTableAsync(_slowDbContext, "logistic_centers");
     }
 
     private List<Courier> GenerateCouriersWithOrders(LogisticCenter center)
@@ -137,7 +136,8 @@ public class SeedDb : ISeedDb
                 Courier = courier
             });
         }
-
+       
+        /*
         for (int i = 0; i < 50; i++)
         {
             orders.Add(new Order
@@ -147,10 +147,16 @@ public class SeedDb : ISeedDb
                 Courier = courier
             });
         }
+        */
 
         return orders;
     }
 
+    private Task TruncateTableAsync(DbContext context, string tableName)
+    {
+        return context.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE {tableName} RESTART IDENTITY CASCADE");
+    }
+    
     private async Task ClearTable<T>(DbContext context) where T : class
     {
         var dbSet = context.Set<T>();
