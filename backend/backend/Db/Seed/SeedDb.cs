@@ -156,12 +156,4 @@ public class SeedDb : ISeedDb
     {
         return context.Database.ExecuteSqlRawAsync($"TRUNCATE TABLE {tableName} RESTART IDENTITY CASCADE");
     }
-    
-    private async Task ClearTable<T>(DbContext context) where T : class
-    {
-        var dbSet = context.Set<T>();
-        context.RemoveRange(dbSet);
-        await context.SaveChangesAsync();
-        Console.WriteLine($"Table {typeof(T).Name} cleared.");
-    }
 }
