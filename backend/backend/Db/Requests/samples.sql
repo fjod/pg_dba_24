@@ -8,15 +8,6 @@ WHERE ST_DWithin(
       )
 order by delivery_timestamp limit 100 ;
 
-SELECT ST_AsText(d.point), d.order_id, d.delivery_timestamp
-FROM deliveries d
-         JOIN couriers c ON d.order_id = c.id
-         JOIN logistic_centers lc ON c.logistic_center_id = lc.id
-WHERE lc.id = 1
-  AND ST_DWithin(lc.location, d.point, 0.1)
-ORDER BY d.delivery_timestamp
-    LIMIT 100;
-
 -- подготовка для второго запроса - идентификаторы и дата
 SELECT
     o.id AS order_id,
@@ -62,7 +53,8 @@ FROM ranked_deliveries
 WHERE rn <= 10
 ORDER BY order_id, delivery_timestamp;
 
--- запрос 3 точки в заданном прямоугольнике
+-- запрос 3 
+-- точки в заданном прямоугольнике
 SELECT ST_AsText(point), order_id, delivery_timestamp
 FROM deliveries
 WHERE ST_Intersects(
