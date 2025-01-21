@@ -1,5 +1,5 @@
-﻿using backend.Db.Entities;
-using backend.Db.Fast;
+﻿using backend.Db.Contexts;
+using backend.Db.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Db.Seed;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace backend.Db.Fast;
+namespace backend.Db.Contexts;
 
 public class SlowDbContext : GeoDbContext
 {

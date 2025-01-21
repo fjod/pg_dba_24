@@ -1,10 +1,11 @@
 ﻿
--- запрос 1 точки в радиусе 0.1 градуса от точки 32.0401 54.7818
-SELECT ST_AsText(point), order_id, delivery_timestamp
+-- запрос 1 
+-- точки в радиусе 0.1 градуса от точки 32.0401 54.7818
+SELECT ST_AsText(point) coordinates, order_id orderId
 FROM deliveries
 WHERE ST_DWithin(
 
-              'SRID=4326;POINT(32.0401 54.7818)', point,0.1
+              'SRID=4326;POINT(32.0401 54.7818)', point,0.5
       )
 order by delivery_timestamp limit 100 ;
 
