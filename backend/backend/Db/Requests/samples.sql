@@ -64,3 +64,31 @@ WHERE ST_Intersects(
       )
 ORDER BY delivery_timestamp
     LIMIT 100;
+
+
+SELECT b.point, b.order_id
+FROM (
+
+         WITH ranked_deliveries AS (
+             SELECT
+                 d.id,
+                 d.order_id,
+                 d.point,
+                 d.delivery_timestamp,
+                 ROW_NUMBER() OVER (PARTITION BY d.order_id ORDER BY d.delivery_timestamp) AS rn
+             FROM deliveries d
+                      JOIN orders o ON o.id = d.order_id
+                      JOIN couriers c ON c.id = o.courier_id
+                      JOIN logistic_centers lc ON lc.id = c.logistic_center_id
+             WHERE lc.id = 1
+               AND ST_DWithin(lc.location, d.point, 0.1)
+               AND d.delivery_timestamp >= '2022-09-17 21:00:00.000000'
+               AND d.delivery_timestamp < '2024-09-17 21:00:00.000000'
+         )
+         SELECT
+             ST_AsText(point) AS point,
+             order_id
+         FROM ranked_deliveries
+         WHERE rn <= 10
+         ORDER BY order_id, delivery_timestamp
+     ) AS b

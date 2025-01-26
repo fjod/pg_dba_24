@@ -8,13 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FastDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Fast"),
-        o => o.UseNetTopologySuite())
+        o => o.UseNetTopologySuite().CommandTimeout(600))
         .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information));
 
 builder.Services.AddDbContext<SlowDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Slow"), 
-            o => o.UseNetTopologySuite())
+            o => o.UseNetTopologySuite().CommandTimeout(600))
       .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information));
 
