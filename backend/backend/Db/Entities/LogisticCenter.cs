@@ -13,6 +13,7 @@ public class LogisticCenter
     [Column("name")]
     public string Name { get; set; }
     
+    [JsonPointConverterAttribute]
     [Column(name:"location", TypeName="geography")]
     public Point Location { get; set; }
 }

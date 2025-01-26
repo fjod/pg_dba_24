@@ -13,6 +13,7 @@ public class Delivery
     [Column("order_id")]
     public int OrderId { get; set; }
     
+    [JsonPointConverterAttribute]
     [Column(name:"point", TypeName="geography")]
     public Point Point { get; set; }
     

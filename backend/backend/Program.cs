@@ -1,5 +1,7 @@
-using backend.Db.Fast;
+using backend;
+using backend.Db.Contexts;
 using backend.Db.Seed;
+using backend.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +19,9 @@ builder.Services.AddDbContext<SlowDbContext>(options =>
         .LogTo(Console.WriteLine, LogLevel.Information));
 
 builder.Services.AddScoped<ISeedDb, SeedDb>();
+builder.Services.AddScoped<ICourierService, CourierService>();
+builder.Services.AddScoped<ILogisticCenterService, LogisticCenterService>();
+builder.Services.AddScoped<IPostgisService, PostgisService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -31,10 +36,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapPut("/seed", async (ISeedDb seed) =>
-{
-    await seed.Seed();
-    return Results.Ok();
-});
+app.MapOtusEndpoints();
 
 app.Run();

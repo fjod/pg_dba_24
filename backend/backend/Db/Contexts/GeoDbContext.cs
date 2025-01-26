@@ -1,7 +1,7 @@
 ﻿using backend.Db.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Db.Fast;
+namespace backend.Db.Contexts;
 
 public class GeoDbContext : DbContext
 {
