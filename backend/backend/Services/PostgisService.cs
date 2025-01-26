@@ -77,7 +77,7 @@ namespace backend.Services
                   AND d.delivery_timestamp < {endTime}
             )
             SELECT
-                ST_AsText(point) AS delivery_point,
+                point,
                 order_id
             FROM ranked_deliveries
             WHERE rn <= 10
@@ -107,7 +107,7 @@ namespace backend.Services
         {
             var result = await context.Deliveries
                 .FromSqlInterpolated($@"
-            SELECT ST_AsText(point) AS Coordinates, order_id AS OrderId
+            SELECT point, order_id
             FROM deliveries
             WHERE ST_Intersects(
                       point,

@@ -19,6 +19,7 @@ builder.Services.AddDbContext<SlowDbContext>(options =>
         .LogTo(Console.WriteLine, LogLevel.Information));
 
 builder.Services.AddScoped<ISeedDb, SeedDb>();
+builder.Services.AddScoped<ICourierService, CourierService>();
 builder.Services.AddScoped<ILogisticCenterService, LogisticCenterService>();
 builder.Services.AddScoped<IPostgisService, PostgisService>();
 
