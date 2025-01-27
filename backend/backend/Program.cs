@@ -6,16 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", builder =>
+    {
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddDbContext<FastDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Fast"),
-        o => o.UseNetTopologySuite().CommandTimeout(600))
+            o => o.UseNetTopologySuite().CommandTimeout(600))
         .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information));
 
 builder.Services.AddDbContext<SlowDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Slow"), 
             o => o.UseNetTopologySuite().CommandTimeout(600))
-      .EnableSensitiveDataLogging()
+        .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information));
 
 builder.Services.AddScoped<ISeedDb, SeedDb>();
@@ -28,6 +38,7 @@ builder.Services.AddScoped<IPostgisService, PostgisService>();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

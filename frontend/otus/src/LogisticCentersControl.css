@@ -1,0 +1,36 @@
+﻿/* src/LogisticCentersControl.css */
+  .logistic-centers-control {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .logistic-centers-list {
+    margin-right: 20px;
+  }
+
+  .points-list {
+    flex-grow: 1;
+  }
+
+  .clickable {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+  }
+
+  .clickable:hover {
+    color: darkblue;
+  }
+
+  .points-list label {
+    display: block;
+    margin: 10px 0;
+  }
+
+  .fetch-points-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    font-size: 26px;
+    cursor: pointer;
+  }
