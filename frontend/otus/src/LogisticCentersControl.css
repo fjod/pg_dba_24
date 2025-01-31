@@ -34,3 +34,8 @@
     font-size: 26px;
     cursor: pointer;
   }
+
+.leaflet-container {
+    height: 400px;
+    width: 100%;
+}
