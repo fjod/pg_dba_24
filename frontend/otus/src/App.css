@@ -1,43 +1,35 @@
-.App {
-  text-align: center;
-}
+/* src/App.css */
+      .App {
+        text-align: center;
+        overflow-y: auto; /* Enable vertical scrolling */
+      }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+      .App-header {
+        background-color: #282c34;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: calc(10px + 2vmin);
+        color: white;
+        width: 100%;
+      }
+      
+      .leaflet-container {
+        height: 400px;
+        width: 100%;
+      }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
+      .logistic-centers-control {
+        display: flex;
+        width: 100%;
+      }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+      .logistic-centers-list {
+        width: 25%;
+      }
 
-.App-link {
-  color: #61dafb;
-}
-
-.leaflet-container {
-    height: 400px;
-    width: 100%;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+      .points-list {
+        width: 75%;
+      }

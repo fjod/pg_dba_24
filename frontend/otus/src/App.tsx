@@ -10,13 +10,15 @@ import React, { useState } from 'react';
                             return (
                               <div className="App">
                                 <header className="App-header">
-                                  <h1>PostgreSQL для админист2раторов баз данных и разработчиков</h1>
+                                  <h3>PostgreSQL для администраторов</h3>
+                                    <h3>баз данных и разработчиков</h3>
                                   {mode === null ? (
                                     <ModeSelector onSelectMode={setMode} />
                                   ) : (
                                     <LogisticCentersControl mode={mode} />
                                   )}
                                 </header>
+
                               </div>
                             );
                           }
