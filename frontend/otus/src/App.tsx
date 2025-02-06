@@ -10,8 +10,7 @@ import React, { useState } from 'react';
                             return (
                               <div className="App">
                                 <header className="App-header">
-                                  <h3>PostgreSQL для администраторов</h3>
-                                    <h3>баз данных и разработчиков</h3>
+                                <label> PostgreSQL для администраторов баз данных и разработчиков </label>
                                   {mode === null ? (
                                     <ModeSelector onSelectMode={setMode} />
                                   ) : (

@@ -104,7 +104,7 @@
                                         <div className="map-container">
                                           <label>
                                             Free Mode:
-                                            <input type="checkbox" checked={freeMode} onChange={(e) => setFreeMode(e.target.checked)} />
+                                            <input type="checkbox" className="free-mode-checkbox" checked={freeMode} onChange={(e) => setFreeMode(e.target.checked)} />
                                           </label>
                                           <MapControl
                                             points={points}
